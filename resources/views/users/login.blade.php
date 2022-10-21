@@ -1,6 +1,5 @@
 <style>
     body {
-        display: flex;
         align-items: center;
         padding-top: 40px;
         padding-bottom: 40px;
@@ -24,7 +23,7 @@
             <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
 
             <div class="form-floating">
-                <input type="email" class="form-control" name="email">
+                <input type="email" class="form-control" name="email" value="{{ old('email') }}">
                 <label for="floatingInput">Email address</label>
 
                 @error('email')

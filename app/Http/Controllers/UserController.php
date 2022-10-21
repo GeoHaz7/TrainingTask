@@ -13,11 +13,12 @@ class UserController extends Controller
     {
         return view('users.login');
     }
-    //Show Login Form
+    //Show Register Form
     public function register()
     {
         return view('users.register');
     }
+
     //create user
     public function store(Request $request)
     {
@@ -30,7 +31,7 @@ class UserController extends Controller
         //Hash Password
         $formFields['password'] = bcrypt($formFields['password']);
 
-        
+        $formFields['isAdmin'] = 0;
 
         //create user
         $user = User::create($formFields);
@@ -56,5 +57,72 @@ class UserController extends Controller
         }
 
         return back()->withErrors(['email' => 'Invalid credentials'])->onlyInput('email');
+    }
+
+    //Logout User
+    public function logout(Request $request)
+    {
+        auth()->logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/')->with('message', 'You have been logged out!');
+    }
+
+    //Manage View 
+    public function manage()
+    {
+        return view('users.manageUsers', ['users' => auth()->user()->get()]);
+    }
+
+    //Edit User View
+    public function editUser($id)
+    {
+        $user = User::findorfail($id);
+
+        return view('users.editUser', ['user' => $user]);
+    }
+
+    //Update User
+    public function updateUser(Request $request, $id)
+    {
+        // Make sure logged in user is owner
+        // if ($user->user_id != auth()->id()) {
+        //     abort(403, 'Unauthorized Action');
+        // }
+
+        $user = User::findorfail($id);
+
+        $formFields = $request->validate([
+            'name' => ['required', 'min:3'],
+            'isAdmin' => ['boolean'],
+            'password' => ['required', 'confirmed', 'min:6']
+        ]);
+
+
+        $formFields['password'] = bcrypt($formFields['password']);
+
+        $user->isAdmin = $request->has('isAdmin');
+
+
+        $user->update($formFields);
+
+        return back()->with('message', 'Listing updated successfully!');
+    }
+
+    //Delete User
+    public function deleteUser($id)
+    {
+
+        $user = User::findorfail($id);
+
+        // Make sure logged in user is owner
+        // if ($user->user_id != auth()->id()) {
+        //     abort(403, 'Unauthorized Action');
+        // }
+
+        $user->delete();
+        return redirect('/')->with('message', 'Listing deleted successfully');
     }
 }

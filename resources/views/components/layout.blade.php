@@ -7,6 +7,9 @@
     <title>Bootstrap demo</title>
     <script src="//unpkg.com/alpinejs" defer></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+        integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
     <script>
@@ -15,6 +18,7 @@
                 extend: {
                     colors: {
                         laravel: "#ef3b2d",
+                        bluez: "#3f51b5"
                     },
                 },
             },
@@ -25,7 +29,7 @@
 
 <body>
     <x-flash-message />
-    <nav class="flex justify-between items-center mb-4">
+    <nav class="flex justify-between items-center my-4 mx-4">
         <a href="/"><img class="w-36"
                 src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Logo.min.svg/2560px-Logo.min.svg.png"
                 alt="" class="logo" /></a>
@@ -35,22 +39,30 @@
                 <li>
                     <span class="font-bold uppercase">Welcome {{ auth()->user()->name }}</span>
                 </li>
+
+                @if (auth()->user()->isAdmin)
+                    <li>
+                        <a href="/manage/users" class="bg-laravel text-white rounded py-2 px-4 hover:bg-black"><i
+                                class="fa-solid fa-gear"></i>
+                            Manage Users</a>
+                    </li>
+                @endif
+
                 <li>
-                    <a href="/listings/manage" class="hover:text-laravel"><i class="fa-solid fa-gear"></i>
-                        Manage Listings</a>
-                </li>
-                <li>
-                    <form class="inline" method="POST" action="/logout">
+                    <form class="inline bg-laravel text-white rounded py-2 px-4 hover:bg-black" method="POST"
+                        action="/logout">
                         @csrf
                         <button type="submit"><i class="fa-solid fa-door-closed"></i> Logout</button>
                     </form>
                 </li>
             @else
                 <li>
-                    <a href="/register" class="hover:text-laravel"><i class="fa-solid fa-user-plus"></i> Register</a>
+                    <a href="/register" class="bg-laravel text-white rounded py-2 px-4 hover:bg-black"><i
+                            class="fa-solid fa-user-plus"></i> Register</a>
                 </li>
                 <li>
-                    <a href="/login" class="hover:text-laravel"><i class="fa-solid fa-arrow-right-to-bracket"></i>
+                    <a href="/login" class="bg-laravel text-white rounded py-2 px-4 hover:bg-black"><i
+                            class="fa-solid fa-arrow-right-to-bracket"></i>
                         Login</a>
                 </li>
             @endauth
