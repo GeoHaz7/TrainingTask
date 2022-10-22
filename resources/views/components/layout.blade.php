@@ -36,8 +36,17 @@
         <ul class="flex space-x-6 mr-6 text-lg">
             @auth
 
-                <li>
-                    <span class="font-bold uppercase">Welcome {{ auth()->user()->name }}</span>
+                <li class="dropdown">
+                    <span class="bg-bluez text-white rounded py-2 px-4 hover:bg-black dropdown-toggle"
+                        id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                        Welcome {{ auth()->user()->name }}
+                    </span>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                        <li><a class="dropdown-item" href="/manage/users/{{ auth()->user()->id }}/edit">Edit Profile</a>
+                        </li>
+                        {{-- <li><a class="dropdown-item" href="#">Another action</a></li>
+                        <li><a class="dropdown-item" href="#">Something else here</a></li> --}}
+                    </ul>
                 </li>
 
                 @if (auth()->user()->isAdmin)

@@ -105,7 +105,13 @@ class UserController extends Controller
     {
         $user = User::findorfail($id);
 
-        return view('users.editUser', ['user' => $user]);
+        if (auth()->user()->isAdmin || $user->user_id == auth()->id()) {
+            return view('users.editUser', ['user' => $user]);
+        } else {
+
+            // Make sure logged in user is owner
+            abort(403, 'Unauthorized Action');
+        }
     }
 
     //Update User
@@ -115,6 +121,7 @@ class UserController extends Controller
         // if ($user->user_id != auth()->id()) {
         //     abort(403, 'Unauthorized Action');
         // }
+
 
         $user = User::findorfail($id);
 
