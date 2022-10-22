@@ -14,7 +14,9 @@
 
                     <h3 class="text-2xl mb-2 inline">{{ $post->title }}</h3>
 
-                    <div class="text-xl font-bold mb-4 inline">By {{ $post->user->name }}</div>
+                    <div class="text-xl font-bold mb-4 inline">By {{ $post->user->name }}
+                        {!! $post->user->isLoggedIn ? '<i class="fa-solid fa-toggle-on"></i>' : '<i class="fa-solid fa-toggle-off"></i>' !!}
+                    </div>
                     @auth
                         @if (auth()->user()->isAdmin || $post->user->id == auth()->user()->id)
                             <div class="float-right">

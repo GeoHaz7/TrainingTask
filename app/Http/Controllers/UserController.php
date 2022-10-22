@@ -33,12 +33,20 @@ class UserController extends Controller
 
         $formFields['isAdmin'] = 0;
         $formFields['isActive'] = 1;
+        $formFields['isLoggedIn'] = 0;
 
         //create user
         $user = User::create($formFields);
 
         //login
         auth()->login($user);
+
+        // dd($user->id);
+
+
+        User::where('id', $user->id)->update(array('isLoggedIn' => '1'));
+
+
 
         return redirect('/')->with('message', 'User created');
     }
@@ -61,6 +69,7 @@ class UserController extends Controller
                 abort(403, 'Account is not active please contact Admin');
             } else {
                 $request->session()->regenerate();
+                User::where('id', $user->id)->update(array('isLoggedIn' => '1'));
 
                 return redirect('/')->with('message', 'YOU HAVE BEEN logged in');
             }
@@ -72,10 +81,14 @@ class UserController extends Controller
     //Logout User
     public function logout(Request $request)
     {
+        User::where('id', auth()->user()->id)->update(array('isLoggedIn' => '0'));
         auth()->logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
+
+
 
         return redirect('/')->with('message', 'You have been logged out!');
     }

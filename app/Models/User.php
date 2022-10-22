@@ -22,7 +22,8 @@ class User extends Authenticatable
         'email',
         'password',
         'isAdmin',
-        'isActive'
+        'isActive',
+        'isLoggedIn'
     ];
 
     /**
@@ -44,6 +45,7 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'isAdmin' => 'boolean',
         'isActive' => 'boolean',
+        'isLoggedIn' => 'boolean',
 
     ];
 
