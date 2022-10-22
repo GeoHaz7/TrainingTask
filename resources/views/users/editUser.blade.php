@@ -54,15 +54,22 @@
                 <label for="floatingPassword">Confirm Password</label>
             </div>
 
-            <div class="checkbox mb-3">
+            <div class="checkbox mb-3 text-left">
                 <label>
-
-                    <input type="checkbox" name="isAdmin" class="switch-input" value="1"
-                        {{ old('isAdmin') ? 'checked="checked"' : '' }} /> isAdmin?
+                    <input type="checkbox" name="isAdmin" class="switch-input"
+                        value="{{ $user->isAdmin == '1' ? '1' : '0' }}" {{ $user->isAdmin == '1' ? 'checked' : '' }} />
+                    isAdmin?
                 </label>
-
             </div>
 
+            <div class="text-left">
+                <p>Activate/Deactivate User:</p>
+
+                <input type="radio" name="isActive" value="1" {{ $user->isActive == '1' ? 'checked' : '' }}>
+                <label for="isActive">Activate</label><br>
+                <input type="radio" name="isActive" value="0" {{ $user->isActive == '0' ? 'checked' : '' }}>
+                <label for="isActive">Deactivate</label><br>
+            </div>
 
             <button class="bg-laravel text-white rounded py-2 px-4 hover:bg-black" type="submit">Update</button>
             <p class="mt-5 mb-3 text-muted">&copy; 2022</p>

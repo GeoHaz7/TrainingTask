@@ -57,3 +57,6 @@ Route::get('/posts/{id}/edit', [PostController::class, 'editPost'])->middleware(
 
 //Update Edited Post
 Route::put('/posts/{id}/put', [PostController::class, 'updatePost'])->middleware('auth');
+
+//Admin add user
+Route::get('/manage/users/add', [UserController::class, 'register'])->middleware('auth');

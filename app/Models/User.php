@@ -21,7 +21,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'isAdmin'
+        'isAdmin',
+        'isActive'
     ];
 
     /**
@@ -42,8 +43,14 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'isAdmin' => 'boolean',
+        'isActive' => 'boolean',
 
     ];
+
+    public function scopeOrder($query)
+    {
+        $query->orderBy('name', 'ASC');
+    }
 
     public function posts()
     {

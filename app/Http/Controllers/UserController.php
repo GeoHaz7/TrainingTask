@@ -32,6 +32,7 @@ class UserController extends Controller
         $formFields['password'] = bcrypt($formFields['password']);
 
         $formFields['isAdmin'] = 0;
+        $formFields['isActive'] = 1;
 
         //create user
         $user = User::create($formFields);
@@ -39,7 +40,7 @@ class UserController extends Controller
         //login
         auth()->login($user);
 
-        return redirect('/')->with('message', 'User created and logged in');
+        return redirect('/')->with('message', 'User created');
     }
 
     //Auth User
@@ -51,9 +52,18 @@ class UserController extends Controller
         ]);
 
         if (auth()->attempt($formFields)) {
-            $request->session()->regenerate();
 
-            return redirect('/')->with('message', 'YOU HAVE BEEN logged in');
+            $user =
+                User::where('email', $request->email)->first();
+
+            if ($user->isActive == '0') {
+                $request->session()->invalidate();
+                abort(403, 'Account is not active please contact Admin');
+            } else {
+                $request->session()->regenerate();
+
+                return redirect('/')->with('message', 'YOU HAVE BEEN logged in');
+            }
         }
 
         return back()->withErrors(['email' => 'Invalid credentials'])->onlyInput('email');
@@ -73,7 +83,8 @@ class UserController extends Controller
     //Manage View 
     public function manage()
     {
-        return view('users.manageUsers', ['users' => auth()->user()->get()]);
+        // dd(User::order()->all());
+        return view('users.manageUsers', ['users' => User::order()->paginate(3)]);
     }
 
     //Edit User View
@@ -96,19 +107,24 @@ class UserController extends Controller
 
         $formFields = $request->validate([
             'name' => ['required', 'min:3'],
-            'isAdmin' => ['boolean'],
-            'password' => ['required', 'confirmed', 'min:6']
+            'password' => ['nullable', 'confirmed', 'min:6']
         ]);
 
 
-        $formFields['password'] = bcrypt($formFields['password']);
+        if ($formFields['password']) {
+            $formFields['password'] = bcrypt($formFields['password']);
+        } else {
+            $formFields['password'] = $user->password;
+        }
+
 
         $user->isAdmin = $request->has('isAdmin');
 
+        $user->isActive = $request->input('isActive');
 
         $user->update($formFields);
 
-        return back()->with('message', 'Listing updated successfully!');
+        return back()->with('message', 'User updated successfully!');
     }
 
     //Delete User
@@ -123,6 +139,6 @@ class UserController extends Controller
         // }
 
         $user->delete();
-        return redirect('/')->with('message', 'Listing deleted successfully');
+        return redirect('/')->with('message', 'User deleted successfully');
     }
 }

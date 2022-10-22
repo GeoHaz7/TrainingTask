@@ -12,7 +12,7 @@ class PostController extends Controller
     public function index()
     {
         return view('posts.index', [
-            'posts' => Post::order()->paginate(10)
+            'posts' => Post::order()->paginate(3)
         ]);
     }
 
@@ -36,7 +36,10 @@ class PostController extends Controller
     public function userPosts($user_id)
     {
         $user = User::find($user_id);
-        $posts = $user->posts()->get();
+        $posts = Post::author($user_id)->paginate(3);
+
+
+        // $posts = $user->posts()->get()->paginate(3);
 
         return view('posts.index', [
             'posts' => $posts

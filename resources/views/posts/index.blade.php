@@ -37,4 +37,7 @@
         @else
             <h1 class="text-3xl font-bold mb-4">No Posts Found</h1>
         @endunless
+        <div class="mt-2 p-4">
+            {{ $posts->links() }}
+        </div>
 </x-layout>

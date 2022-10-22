@@ -12,13 +12,15 @@
     }
 </style>
 <x-layout>
+
     <div class="form-signin w-100 m-auto text-center">
         <form method="POST" action="/users">
             @csrf
             <img class="mb-4"
                 src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Logo.min.svg/2560px-Logo.min.svg.png"
                 alt="" height="57">
-            <h1 class="h3 mb-3 fw-normal">Please sign up</h1>
+            <h1 class="h3 mb-3 fw-normal">
+                {{ substr(url()->current(), -16) == 'manage/users/add' ? 'Please add a user' : 'Please Sign Up' }}</h1>
 
             <div class="form-floating">
                 <input type="text" class="form-control" name="name">
