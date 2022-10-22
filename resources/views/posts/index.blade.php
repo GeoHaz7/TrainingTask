@@ -1,7 +1,13 @@
+<style>
+    .baseImage {
+        width: 300px;
+        height: 200px;
+    }
+</style>
 <x-layout class="justify-center">
     <div class="pl-10 pr-10">
         <h1 class="text-2xl">Here are the avalible posts:</h1>
-        <a href="/manage/users" class="bg-bluez text-white rounded py-2 px-4 hover:bg-black float-right"><i
+        <a href="/posts/add" class="bg-bluez text-white rounded py-2 px-4 hover:bg-black float-right"><i
                 class="fa-solid fa-pen"></i>
             New Post</a>
     </div>
@@ -32,7 +38,11 @@
                         @endif
                     @endauth
                     <div class="text-xl font-bold mb-1 ">{{ $post->categories }}</div>
-                    <h5>{{ $post->updated_at ? $post->updated_at : $post->created_at }}</h5>
+                    <h5 class="mb-3">{{ $post->updated_at ? $post->updated_at : $post->created_at }}</h5>
+                    <a href="{{ url()->current() . '/storage' . '/' . $post->baseImage }}"> <img
+                            class="hidden mr-6 md:block {{ $post->baseImage ? 'baseImage' : '' }}"
+                            src="{{ $post->baseImage ? asset('storage/' . $post->baseImage) : '' }}" alt="" /></a>
+
                     <p class="mt-3">{{ $post->content }}</p>
                 </div>
             @endforeach

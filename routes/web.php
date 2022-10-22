@@ -55,8 +55,14 @@ Route::get('/posts/user/{user_id}', [PostController::class, 'userPosts'])->middl
 //Show Edit post view
 Route::get('/posts/{id}/edit', [PostController::class, 'editPost'])->middleware('auth');
 
+//Show Edit post view
+Route::get('/posts/add', [PostController::class, 'addPost'])->middleware('auth');
+
 //Update Edited Post
 Route::put('/posts/{id}/put', [PostController::class, 'updatePost'])->middleware('auth');
 
 //Admin add user
 Route::get('/manage/users/add', [UserController::class, 'register'])->middleware('auth');
+
+//Store new post
+Route::post('/posts/add', [PostController::class, 'storePost']);

@@ -75,4 +75,35 @@ class PostController extends Controller
             // Make sure logged in user is owner
             abort(403, 'Unauthorized Action');
     }
+
+    //Add Post
+    public function addPost()
+    {
+        return view('posts.addPost');
+    }
+
+    //Store Post
+    public function storePost(Request $request)
+    {
+
+        $formFields = $request->validate([
+            'title' => ['required'],
+            'categories' => ['required'],
+            'content' => ['required']
+        ]);
+
+        if ($request->hasFile('baseImage')) {
+            $formFields['baseImage'] =
+                $request->file('baseImage')->store('baseImages', 'public');
+        }
+
+
+        $formFields['user_id'] = auth()->user()->id;
+
+        //create post
+        $post = Post::create($formFields);
+
+
+        return redirect('/')->with('message', 'Post created');
+    }
 }
