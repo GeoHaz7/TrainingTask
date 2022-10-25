@@ -9,10 +9,14 @@ class Post extends Model
 {
     use HasFactory;
 
+    protected $casts = [
+        'images' => 'array'
+    ];
+
     protected $fillable = [
         'title', 'content',
-        // 'status',
-        'categories', 'user_id', 'baseImage'
+        'status',
+        'categories', 'user_id', 'images'
     ];
 
     public function scopeOrder($query)

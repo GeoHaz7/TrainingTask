@@ -10,10 +10,15 @@
         max-width: 700px;
         padding: 15px;
     }
+
+    .baseImage {
+        width: 150px;
+        height: 150px;
+    }
 </style>
 <x-layout>
     <div class="form-signin w-100 m-auto text-center">
-        <form method="POST" action="/posts/{{ $post->id }}/put">
+        <form method="POST" action="/posts/{{ $post->id }}/put" enctype="multipart/form-data">
             @csrf
             @method('PUT')
             <img class="mb-4"
@@ -56,7 +61,30 @@
                 @enderror
             </div>
 
-            <button class="bg-laravel text-white rounded py-2 px-4 hover:bg-black" type="submit">Publish Post</button>
+            <div class="text-left">
+                <p>Activate/Deactivate Post:</p>
+
+                <input type="radio" name="status" value="1" {{ $post->status == '1' ? 'checked' : '' }}>
+                <label for="status">Activate</label><br>
+                <input type="radio" name="status" value="0" {{ $post->status == '0' ? 'checked' : '' }}>
+                <label for="status">Deactivate</label><br>
+            </div>
+
+            @foreach (explode('|', $post->images) as $image)
+                <img class="m-2 baseImage inline" src="{{ asset('storage/images/' . $image) }}" alt="" />
+            @endforeach
+
+            <div class="mb-4 text-left">
+                <label for="image[]" class="mb-2">Image</label>
+                <input type="file" class="border border-gray-200 rounded p-2 w-full" name="image[]" multiple />
+                @error('image[]')
+                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <button class="block m-auto mt-2 bg-laravel text-white rounded py-2 px-4 hover:bg-black"
+                type="submit">Publish
+                Post</button>
             <p class="mt-5 mb-3 text-muted">&copy; 2022</p>
         </form>
     </div>

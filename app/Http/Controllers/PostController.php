@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 
 class PostController extends Controller
 {
@@ -67,6 +68,25 @@ class PostController extends Controller
 
         if (auth()->user()->isAdmin || $post->user_id == auth()->id()) {
 
+            $image = array();
+            if ($files = $request->file(('image'))) {
+                foreach ($files as $file) {
+
+                    $image_name = md5(rand(1000, 10000));
+                    $ext = strtolower($file->getClientOriginalExtension());
+                    $image_full_name = $image_name . '.' . $ext;
+                    $upload_path = 'storage/images/';
+                    $image_url = $upload_path . $image_full_name;
+                    $file->move($upload_path, $image_full_name);
+                    // $file->store('images', 'public');
+                    // dump($file);
+                    $image[] = $image_full_name;
+                    // $image[] = $image_full_name;
+                }
+            }
+
+            $formFields['images'] = implode('|', $image);
+
             $post->update($formFields);
 
             return redirect('/')->with('message', 'Post Updated successfully');
@@ -92,13 +112,39 @@ class PostController extends Controller
             'content' => ['required']
         ]);
 
-        if ($request->hasFile('baseImage')) {
-            $formFields['baseImage'] =
-                $request->file('baseImage')->store('baseImages', 'public');
+        // if ($request->hasFile('images')) {
+        //     $formFields['images'] =
+        //         $request->file('images')->store('images', 'public');
+        // }
+
+        //
+        $image = array();
+        if ($files = $request->file(('image'))) {
+            foreach ($files as $file) {
+
+                $image_name = md5(rand(1000, 10000));
+                $ext = strtolower($file->getClientOriginalExtension());
+                $image_full_name = $image_name . '.' . $ext;
+                $upload_path = 'storage/images/';
+                $image_url = $upload_path . $image_full_name;
+                $file->move($upload_path, $image_full_name);
+                // $file->store('images', 'public');
+                // dump($file);
+                $image[] = $image_full_name;
+                // $image[] = $image_full_name;
+            }
         }
+
+        $formFields['images'] = implode('|', $image);
+
+        //
+
 
 
         $formFields['user_id'] = auth()->user()->id;
+        $formFields['status'] = '1';
+
+
 
         //create post
         $post = Post::create($formFields);

@@ -16,7 +16,9 @@
                     @foreach ($users as $user)
                         <tr class="border-gray-300">
                             <td class="px-4 py-8 border-t border-b border-gray-300 text-lg">
-                                <p> {{ $user->name }} </p>
+                                <span> {{ $user->name }} </span>
+                                {!! $user->isLoggedIn ? '<i class="fa-solid fa-toggle-on"></i>' : '<i class="fa-solid fa-toggle-off"></i>' !!}
+
                             </td>
 
                             @unless(auth()->user()->id == $user->id)

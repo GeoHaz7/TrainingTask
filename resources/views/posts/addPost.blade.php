@@ -58,9 +58,9 @@
             </div>
 
             <div class="mb-4 text-left">
-                <label for="baseImage" class="mb-2">Image</label>
-                <input type="file" class="border border-gray-200 rounded p-2 w-full" name="baseImage" />
-                @error('baseImage')
+                <label for="image[]" class="mb-2">Image</label>
+                <input type="file" class="border border-gray-200 rounded p-2 w-full" name="image[]" multiple />
+                @error('image[]')
                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                 @enderror
             </div>
