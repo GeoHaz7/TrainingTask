@@ -10,6 +10,22 @@
         max-width: 700px;
         padding: 15px;
     }
+
+    input[type="file"] {
+        display: block;
+    }
+
+    .imageThumb {
+        max-height: 75px;
+        border: 2px solid;
+        padding: 1px;
+        cursor: pointer;
+    }
+
+    .pip {
+        display: inline-block;
+        margin: 10px 10px 0 0;
+    }
 </style>
 <x-layout>
     <div class="form-signin w-100 m-auto text-center">
@@ -59,7 +75,9 @@
 
             <div class="mb-4 text-left">
                 <label for="image[]" class="mb-2">Image</label>
-                <input type="file" class="border border-gray-200 rounded p-2 w-full" name="image[]" multiple />
+                <input id="files" type="file" class="border border-gray-200 rounded p-2 w-full" name="image[]"
+                    multiple />
+                <div id="gallery"></div>
                 @error('image[]')
                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                 @enderror
@@ -70,3 +88,41 @@
         </form>
     </div>
 </x-layout>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+
+<script>
+    $(document).ready(function() {
+        if (window.File && window.FileList && window.FileReader) {
+            $("#files").on("change", function(e) {
+                $('#gallery').empty();
+
+                var files = Array.from(e.target.files);
+                filesLength = files.length;
+                for (var i = 0; i < filesLength; i++) {
+                    $(this).parent(".pip").remove();
+
+                    var f = files[i]
+                    var fileReader = new FileReader();
+                    fileReader.onload = (function(e) {
+                        var file = e.target;
+                        $("<span class=\"pip\">" +
+                            "<img class=\"imageThumb\" src=\"" + e.target.result +
+                            "\" title=\"" + file.name + "\"/>" +
+                            // "<br/><span class=\"remove\">Remove image</span>" +
+                            "</span>").appendTo('#gallery');
+                        // $(".remove").click(function() {
+                        //     $(this).parent(".pip").remove();
+                        //     removeFileFromFileList(i, e);
+
+                        // });
+                    });
+                    fileReader.readAsDataURL(f);
+                }
+            });
+        } else {
+            alert("Your browser doesn't support to File API")
+        }
+    });
+</script>
