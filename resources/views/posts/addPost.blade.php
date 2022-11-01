@@ -76,9 +76,18 @@
             <div class="mb-4 text-left">
                 <label for="image[]" class="mb-2">Image</label>
                 <input id="files" type="file" class="border border-gray-200 rounded p-2 w-full" name="image[]"
-                    multiple />
+                    accept="image/*" multiple />
                 <div id="gallery"></div>
-                @error('image[]')
+                @error('image')
+                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div class="form-floating">
+                <input type="text" class="form-control" name="embed" value="">
+                <label for="floatingInput">Youtube Video</label>
+
+                @error('embed')
                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                 @enderror
             </div>

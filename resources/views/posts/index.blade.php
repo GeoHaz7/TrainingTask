@@ -6,11 +6,12 @@
 
     .carouselItem {
         width: 1200px;
-        height: 900px;
+        max-height: 60vh;
     }
 
     .modal-lg {
-        max-width: 80% !important;
+        /* max-height: 50% !important; */
+        /* max-width: 50% !important; */
     }
 </style>
 <x-layout class="justify-center">
@@ -24,12 +25,10 @@
     <div class="p-5">
         @unless($posts->isEmpty())
 
-
             @foreach ($posts as $post)
                 <div class="bg-gray-50 border border-gray-200 rounded mb-3 p-2">
 
                     <h3 class="text-2xl mb-2 inline">{{ $post->title }}</h3>
-
                     <div class="text-xl font-bold mb-4 inline">By {{ $post->user->name }}
                         {!! $post->status ? '<i class="fa-solid fa-toggle-on"></i>' : '<i class="fa-solid fa-toggle-off"></i>' !!}
                     </div>
@@ -51,74 +50,86 @@
                     <h5 class="mb-3">{{ $post->updated_at ? $post->updated_at : $post->created_at }}</h5>
                     <p class="mt-3">{{ $post->content }}</p>
 
-                    @if (count(explode('|', $post->images)) > 1)
-                        <img class=" mr-6  {{ 'baseImage' }} inline"
-                            src="{{ asset('storage/images/' . explode('|', $post->images)[0]) }}" alt="" />
 
-                        <div type="button" data-bs-toggle="modal" data-bs-target="#exampleModal"
-                            class=" inline text-center items-center align-center border-solid border-4 p-10">
-                            + {{ count(explode('|', $post->images)) - 1 }}
-                        </div>
+                    {!! $post->embed
+                        ? '<iframe class="inline mr-6" width="600" height="400" src="https://www.youtube.com/embed/' .
+                            $post->embed .
+                            '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'
+                        : '' !!}
 
-                        <!-- Modal -->
-                        <div class="modal fade " id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
-                            aria-hidden="true">
-                            <div class="modal-dialog modal-lg">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h3 class="modal-title text-2xl" id="exampleModalLabel">Post Images:</h3>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
-                                            <div class="carousel-inner">
+                    <div class="inline">
+                        @if ($post->images)
+                            <img class=" mr-6  {{ 'baseImage' }} inline"
+                                src="{{ asset('storage/images/' . explode('|', $post->images)[0]) }}" alt="" />
+                        @endif
 
-                                                @foreach (explode('|', $post->images) as $image)
-                                                    @if ($loop->first)
-                                                        <div class="carousel-item active">
-                                                            <img class=" carouselItem"
-                                                                src="{{ asset('storage/images/' . $image) }}"
-                                                                alt="First slide">
-                                                        </div>
-                                                        @continue
-                                                    @endif
-                                                    <div class="carousel-item">
+                        @if (count(explode('|', $post->images)) > 1)
+                            <div type="button" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                                class=" inline text-center items-center align-center border-solid border-4 p-10">
+                                + {{ count(explode('|', $post->images)) - 1 }}
+                            </div>
+                        @endif
+                    </div>
+
+                    <!-- Modal -->
+                    <div class="modal fade " id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h3 class="modal-title text-2xl" id="exampleModalLabel">Post Images:</h3>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
+                                        <div class="carousel-inner">
+
+
+                                            @foreach (explode('|', $post->images) as $image)
+                                                @if ($loop->first)
+                                                    <div class="carousel-item active">
                                                         <img class=" carouselItem"
                                                             src="{{ asset('storage/images/' . $image) }}"
                                                             alt="First slide">
                                                     </div>
-                                                @endforeach
+                                                    @continue
+                                                @endif
+                                                <div class="carousel-item">
+                                                    <img class=" carouselItem"
+                                                        src="{{ asset('storage/images/' . $image) }}" alt="First slide">
+                                                </div>
+                                            @endforeach
 
 
-                                            </div>
-                                            <a class="carousel-control-prev" href="#carouselExampleControls" role="button"
-                                                data-slide="prev">
-                                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                                <span class="sr-only">Previous</span>
-                                            </a>
-                                            <a class="carousel-control-next" href="#carouselExampleControls" role="button"
-                                                data-slide="next">
-                                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                                <span class="sr-only">Next</span>
-                                            </a>
                                         </div>
+                                        <a class="carousel-control-prev" href="#carouselExampleControls" role="button"
+                                            data-slide="prev">
+                                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                            <span class="sr-only">Previous</span>
+                                        </a>
+                                        <a class="carousel-control-next" href="#carouselExampleControls" role="button"
+                                            data-slide="next">
+                                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                            <span class="sr-only">Next</span>
+                                        </a>
                                     </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class=" bg-bluez text-white rounded py-2 px-4 hover:bg-black"
-                                            data-bs-dismiss="modal">Close</button>
-                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class=" bg-bluez text-white rounded py-2 px-4 hover:bg-black"
+                                        data-bs-dismiss="modal">Close</button>
                                 </div>
                             </div>
                         </div>
+                    </div>
                 </div>
+            @endforeach
         </div>
-        @endif
+        {{-- @endif --}}
 
 
 
         </div>
-        @endforeach
     @else
         <h1 class="text-3xl font-bold mb-4">No Posts Found</h1>
     @endunless
