@@ -24,9 +24,19 @@ class PostController extends Controller
     {
 
         $post = Post::findorfail($id);
+        $image = explode('|', $post->images);
 
 
         if (auth()->user()->isAdmin || $post->user_id == auth()->id()) {
+            if ($post->images) {
+                $dimagesArray = explode('|', $post->images);
+                for ($i = 0; $i <= count($dimagesArray) - 1; $i++) {
+                    unlink(public_path('storage\images\\' . $dimagesArray[$i]));
+                    if (($key = array_search($dimagesArray[$i], $image)) !== false) {
+                        unset($image[$key]);
+                    }
+                }
+            }
             $post->delete();
             return redirect('/')->with('message', 'Post deleted successfully');
         } else
