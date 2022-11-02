@@ -1,14 +1,15 @@
 <x-layout class="justify-center">
-    <div class="pl-10 pr-10">
-        <h1 class="text-2xl">Here are the avalible posts:</h1>
-        <a href="/posts/add" class="bg-bluez text-white rounded py-2 px-4 hover:bg-black float-right"><i
-                class="fa-solid fa-pen"></i>
-            New Post</a>
-    </div>
+    @if (Auth::check())
+        <div class="pl-10 pr-10">
+            <h1 class="text-2xl">Here are the avalible posts:</h1>
+            <a href="/posts/add" class="bg-bluez text-white rounded py-2 px-4 hover:bg-black float-right"><i
+                    class="fa-solid fa-pen"></i>
+                New Post</a>
+        </div>
+    @endif
 
     <div class="p-5">
-        @unless($posts->isEmpty())
-
+        @if (!$posts->isEmpty())
             @foreach ($posts as $post)
                 <div class="bg-gray-50 border border-gray-200 rounded mb-3 p-2">
 
@@ -78,22 +79,23 @@
                                     <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
                                         <div class="carousel-inner">
 
-
-                                            @foreach (explode('|', $post->images) as $image)
-                                                @if ($loop->first)
-                                                    <div class="carousel-item active">
+                                            @if ($post->images)
+                                                @foreach (explode('|', $post->images) as $image)
+                                                    @if ($loop->first)
+                                                        <div class="carousel-item active">
+                                                            <img class=" carouselItem"
+                                                                src="{{ asset('storage/images/' . $image) }}"
+                                                                alt="First slide">
+                                                        </div>
+                                                        @continue
+                                                    @endif
+                                                    <div class="carousel-item">
                                                         <img class=" carouselItem"
                                                             src="{{ asset('storage/images/' . $image) }}"
                                                             alt="First slide">
                                                     </div>
-                                                    @continue
-                                                @endif
-                                                <div class="carousel-item">
-                                                    <img class=" carouselItem"
-                                                        src="{{ asset('storage/images/' . $image) }}" alt="First slide">
-                                                </div>
-                                            @endforeach
-
+                                                @endforeach
+                                            @endif
 
                                         </div>
                                         <a class="carousel-control-prev" href="#carouselExampleControls" role="button"
@@ -117,23 +119,14 @@
                     </div>
                 </div>
             @endforeach
-        </div>
-        {{-- @endif --}}
+        @else
+            <h1 class="text-3xl font-bold mb-4">No Posts Found</h1>
 
+        @endif
+    </div>
 
-
-        </div>
-    @else
-        <h1 class="text-3xl font-bold mb-4">No Posts Found</h1>
-    @endunless
     <div class="mt-2 p-4">
         {{ $posts->links() }}
     </div>
+
 </x-layout>
-
-<script>
-    function view(pdf) {
-
-
-    }
-</script>

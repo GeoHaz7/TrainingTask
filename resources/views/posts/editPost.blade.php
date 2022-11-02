@@ -1,5 +1,5 @@
 <x-layout>
-    <div class="form-signin w-100 m-auto text-center">
+    <div class="form-post w-100 m-auto text-center">
         <form method="POST" action="/posts/{{ $post->id }}/put" id="editPostFom" enctype="multipart/form-data">
             @csrf
             @method('PUT')

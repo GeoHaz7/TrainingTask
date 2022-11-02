@@ -29,6 +29,11 @@ class Post extends Model
         $query->where('user_id', 'like', $user_id);
     }
 
+    public function scopeActive($query)
+    {
+        $query->where('status', true);
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');

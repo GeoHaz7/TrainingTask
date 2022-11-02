@@ -8,14 +8,21 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
 {
     //ALL Posts
     public function index()
     {
+        $posts = Post::order();
+        if (!Auth::check()) {
+            $posts  =  $posts->active();
+        }
+        $posts  =  $posts->paginate(2);
+
         return view('posts.index', [
-            'posts' => Post::order()->paginate(3)
+            'posts' => $posts,
         ]);
     }
 
@@ -99,6 +106,14 @@ class PostController extends Controller
 
         if (auth()->user()->isAdmin || $post->user_id == auth()->id()) {
 
+            if ($request->deletedImages) {
+                $dimagesArray = explode(',', $request->deletedImages);
+                for ($i = 0; $i <= count($dimagesArray) - 1; $i++) {
+                    unlink(public_path('storage\images\\' . $dimagesArray[$i]));
+                    $image = array_diff($image, array($dimagesArray[$i]));
+                }
+            }
+
             if ($files = $request->file(('image'))) {
                 foreach ($files as $file) {
 
@@ -132,15 +147,7 @@ class PostController extends Controller
 
 
 
-            if ($request->deletedImages) {
-                $dimagesArray = explode(',', $request->deletedImages);
-                for ($i = 0; $i <= count($dimagesArray) - 1; $i++) {
-                    unlink(public_path('storage\images\\' . $dimagesArray[$i]));
-                    if (($key = array_search($dimagesArray[$i], $image)) !== false) {
-                        unset($image[$key]);
-                    }
-                }
-            }
+
 
 
             // if ($image) {
