@@ -1,76 +1,40 @@
-<style>
-    body {
-        align-items: center;
-        /* padding-top: 40px; */
-        padding-bottom: 40px;
-        background-color: #f5f5f5;
-    }
-
-    .form-signin {
-        max-width: 700px;
-        padding: 15px;
-    }
-
-    input[type="file"] {
-        display: block;
-    }
-
-    .imageThumb {
-        max-height: 75px;
-        border: 2px solid;
-        padding: 1px;
-        cursor: pointer;
-    }
-
-    .pip {
-        display: inline-block;
-        margin: 10px 10px 0 0;
-    }
-</style>
 <x-layout>
-    <div class="form-signin w-100 m-auto text-center">
-        <form method="POST" action="/posts/add" enctype="multipart/form-data">
+    <div class="form-post w-100 m-auto text-center">
+        <form id="addPostForm" method="POST" action="/posts/add" enctype="multipart/form-data">
             @csrf
+
             <img class="mb-4"
                 src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Logo.min.svg/2560px-Logo.min.svg.png"
                 alt="" height="57">
+
             <h1 class="h3 mb-3 fw-normal">Please Create A Post</h1>
 
             <div class="form-floating">
-                <input type="text" class="form-control" name="title" value="">
+                <input id="title" type="text" class="form-control" name="title" value="">
                 <label for="floatingInput">Title</label>
 
-                @error('title')
-                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                @enderror
+                <div class="errorTxt text-left text-laravel">
+                </div>
             </div>
 
             <div class="form-floating">
-
-
-                <select name="categories" class="form-control" value="Sport">
-
+                <select id="categories" name="categories" class="form-control" value="Sport">
                     <option value="Science">Science</option>
                     <option value="Politics">Politics</option>
                     <option value="Sport">Sport</option>
                 </select>
                 <label for="categories">Choose a Category:</label>
 
-                @error('categories')
-                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                @enderror
             </div>
 
 
 
             <div class="form-floating mb-2">
-
-                <textarea class="form-control" name="content"></textarea>
+                <textarea id="content" class="form-control" name="content"></textarea>
                 <label for="content">Post Content</label>
 
-                @error('content')
-                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                @enderror
+                <div class="errorTxt text-left text-laravel">
+                </div>
             </div>
 
             <div class="mb-4 text-left">
@@ -78,18 +42,18 @@
                 <input id="files" type="file" class="border border-gray-200 rounded p-2 w-full" name="image[]"
                     accept="image/*" multiple />
                 <div id="gallery"></div>
-                @error('image')
-                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                @enderror
+            </div>
+
+            <div class="mb-4 text-left">
+                <label for="pdf" class="mb-2">Pdf</label>
+                <input id="pdf" type="file" class="border border-gray-200 rounded p-2 w-full" name="pdf"
+                    accept="application/pdf" />
             </div>
 
             <div class="form-floating">
-                <input type="text" class="form-control" name="embed" value="">
+                <input id="embed" type="text" class="form-control" name="embed" value="">
                 <label for="floatingInput">Youtube Video</label>
 
-                @error('embed')
-                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                @enderror
             </div>
 
             <button class="bg-laravel text-white rounded py-2 px-4 hover:bg-black" type="submit">Publish Post</button>
@@ -99,9 +63,63 @@
 </x-layout>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"
+    integrity="sha512-rstIgDs0xPgmG6RX1Aba4KV5cWJbAMcvRCVmglpam9SoHZiUCyQVDdH2LPlxoHtrv17XWblE/V/PP+Tr04hbtA=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
 <script>
+    $('#addPostForm').validate({
+        rules: {
+            title: 'required',
+            content: 'required',
+
+        },
+        messages: {
+            required: 'This field is required',
+
+
+        },
+        errorElement: 'div',
+        errorPlacement: function(error, element) {
+            error.insertAfter(element.parent());
+        },
+        submitHandler: function(form) {
+            AddPost();
+        }
+    });
+
+    function AddPost() {
+        var fd = new FormData();
+
+        var ins = document.getElementById('files').files.length;
+        for (var x = 0; x < ins; x++) {
+            fd.append("image[]", document.getElementById('files').files[x]);
+        }
+
+        fd.append('title', $('#title').val());
+        fd.append('content', $('#content').val());
+        fd.append('categories', $('#categories').val());
+        fd.append('pdf', $('#pdf')[0].files[0]);
+        fd.append('embed', $('#embed').val());
+        fd.append('status', $('input[name="status"]:checked').val());
+        fd.append('_token', '{{ csrf_token() }}');
+
+        console.log($('#embed').val());
+        $.ajax({
+            url: "/posts/add",
+            type: "POST",
+            processData: false,
+            contentType: false,
+            data: fd,
+            success: function(response) {
+                location.href = "{{ url('/') }}";
+            },
+            error: function(err) {
+
+            }
+        });
+    }
+
     $(document).ready(function() {
         if (window.File && window.FileList && window.FileReader) {
             $("#files").on("change", function(e) {
@@ -119,13 +137,8 @@
                         $("<span class=\"pip\">" +
                             "<img class=\"imageThumb\" src=\"" + e.target.result +
                             "\" title=\"" + file.name + "\"/>" +
-                            // "<br/><span class=\"remove\">Remove image</span>" +
                             "</span>").appendTo('#gallery');
-                        // $(".remove").click(function() {
-                        //     $(this).parent(".pip").remove();
-                        //     removeFileFromFileList(i, e);
 
-                        // });
                     });
                     fileReader.readAsDataURL(f);
                 }

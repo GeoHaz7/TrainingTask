@@ -22,6 +22,7 @@ class UserController extends Controller
     //create user
     public function store(Request $request)
     {
+
         $formFields = $request->validate([
             'name' => ['required', 'min:3'],
             'email' => ['required', 'email', Rule::unique('users', 'email')],
@@ -41,23 +42,19 @@ class UserController extends Controller
         //login
         auth()->login($user);
 
-        // dd($user->id);
-
 
         User::where('id', $user->id)->update(array('isLoggedIn' => '1'));
-
-
-
-        return redirect('/')->with('message', 'User created');
+        return Response()->json(['success' => 'user created'], 200);
     }
 
     //Auth User
     public function auth(Request $request)
     {
-        $formFields = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required']
-        ]);
+        $formFields['email'] =
+            $request->email;
+
+        $formFields['password'] =
+            $request->password;
 
         if (auth()->attempt($formFields)) {
 
@@ -75,7 +72,7 @@ class UserController extends Controller
             }
         }
 
-        return back()->withErrors(['email' => 'Invalid credentials'])->onlyInput('email');
+        abort(403, 'invalid credentials');
     }
 
     //Logout User

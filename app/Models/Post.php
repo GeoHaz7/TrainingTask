@@ -16,7 +16,7 @@ class Post extends Model
     protected $fillable = [
         'title', 'content',
         'status',
-        'categories', 'user_id', 'images', 'embed'
+        'categories', 'user_id', 'images', 'embed', 'pdf'
     ];
 
     public function scopeOrder($query)

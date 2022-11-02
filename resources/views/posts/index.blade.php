@@ -1,19 +1,3 @@
-<style>
-    .baseImage {
-        width: 300px;
-        height: 200px;
-    }
-
-    .carouselItem {
-        width: 1200px;
-        max-height: 60vh;
-    }
-
-    .modal-lg {
-        /* max-height: 50% !important; */
-        /* max-width: 50% !important; */
-    }
-</style>
 <x-layout class="justify-center">
     <div class="pl-10 pr-10">
         <h1 class="text-2xl">Here are the avalible posts:</h1>
@@ -57,6 +41,7 @@
                             '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'
                         : '' !!}
 
+
                     <div class="inline">
                         @if ($post->images)
                             <img class=" mr-6  {{ 'baseImage' }} inline"
@@ -71,6 +56,14 @@
                         @endif
                     </div>
 
+                    @if ($post->pdf)
+                        <div class="inline">
+                            <a href="{{ asset('storage/pdf/' . $post->pdf) }}"><img id="pdfFile" class="inline ml-6"
+                                    src="https://www.woschool.com/wp-content/uploads/2020/09/png-transparent-pdf-icon-illustration-adobe-acrobat-portable-document-format-computer-icons-adobe-reader-file-pdf-icon-miscellaneous-text-logo.png"
+                                    width="150" height="100" alt="pdf" /></a>
+
+                        </div>
+                    @endif
                     <!-- Modal -->
                     <div class="modal fade " id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
                         aria-hidden="true">
@@ -137,3 +130,10 @@
         {{ $posts->links() }}
     </div>
 </x-layout>
+
+<script>
+    function view(pdf) {
+
+
+    }
+</script>

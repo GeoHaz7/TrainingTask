@@ -1,20 +1,7 @@
-<style>
-    body {
-        align-items: center;
-        /* padding-top: 40px; */
-        padding-bottom: 40px;
-        background-color: #f5f5f5;
-    }
-
-    .form-signin {
-        max-width: 330px;
-        padding: 15px;
-    }
-</style>
 <x-layout>
 
     <div class="form-signin w-100 m-auto text-center">
-        <form method="POST" action="/users">
+        <form id="registerForm" method="POST" action="#">
             @csrf
             <img class="mb-4"
                 src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Logo.min.svg/2560px-Logo.min.svg.png"
@@ -23,34 +10,26 @@
                 {{ substr(url()->current(), -16) == 'manage/users/add' ? 'Please add a user' : 'Please Sign Up' }}</h1>
 
             <div class="form-floating">
-                <input type="text" class="form-control" name="name">
+                <input id="name" type="text" class="form-control" name="name">
                 <label for="floatingInput">Name</label>
 
-                @error('name')
-                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                @enderror
             </div>
 
             <div class="form-floating">
-                <input type="email" class="form-control" name="email">
+                <input id="email" type="email" class="form-control" name="email">
                 <label for="floatingInput">Email address</label>
 
-                @error('email')
-                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                @enderror
+
             </div>
 
             <div class="form-floating">
-                <input type="password" class="form-control" name="password">
+                <input id="password" type="password" class="form-control" name="password">
                 <label for="floatingPassword">Password</label>
 
-                @error('password')
-                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                @enderror
             </div>
 
             <div class="form-floating">
-                <input type="password" class="form-control" name="password_confirmation">
+                <input id="password_confirmation" type="password" class="form-control" name="password_confirmation">
                 <label for="floatingPassword">Confirm Password</label>
             </div>
 
@@ -65,3 +44,68 @@
         </form>
     </div>
 </x-layout>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"
+    integrity="sha512-rstIgDs0xPgmG6RX1Aba4KV5cWJbAMcvRCVmglpam9SoHZiUCyQVDdH2LPlxoHtrv17XWblE/V/PP+Tr04hbtA=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script>
+    $(document).ready(function() {
+        $("#registerForm").validate({
+            rules: {
+                name: 'required',
+                email: 'required',
+                password: {
+                    'required': true,
+                    minlength: 6,
+                },
+                password_confirmation: {
+                    minlength: 6,
+                    equalTo: "#password"
+                }
+
+            },
+            messages: {
+                "password_confirmation": {
+                    equalTo: 'Passwords do not match',
+                    required: 'This field is required',
+                    minlength: 'Passwords too short',
+
+                }
+
+
+            },
+            errorElement: 'div',
+            errorPlacement: function(error, element) {
+                error.insertAfter(element.parent());
+            },
+            submitHandler: function() {
+                register();
+            }
+        });
+
+    });
+
+    function register() {
+        var fd = new FormData();
+
+        fd.append('name', $('#name').val());
+        fd.append('email', $('#email').val());
+        fd.append('password', $('#password').val());
+        fd.append('password_confirmation', $('#password_confirmation').val());
+        fd.append('_token', '{{ csrf_token() }}');
+        $.ajax({
+            url: "/users",
+            type: "POST",
+            processData: false,
+            contentType: false,
+            data: fd,
+            success: function(response) {
+                location.href = "{{ url('/') }}";
+            },
+            error: function(err) {
+                alert(err.responseJSON.message);
+            }
+        });
+    }
+</script>

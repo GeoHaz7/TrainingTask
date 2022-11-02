@@ -1,17 +1,3 @@
-<style>
-    body {
-        align-items: center;
-        /* padding-top: 40px; */
-        padding-bottom: 40px;
-        background-color: #f5f5f5;
-    }
-
-    .form-signin {
-        max-width: 330px;
-        padding: 15px;
-    }
-</style>
-
 <x-layout>
     <div class="form-signin w-100 m-auto text-center">
         <form method="POST" action="/manage/users/{{ $user->id }}/update">

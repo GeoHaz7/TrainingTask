@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+// Auth::route();
 //Show All Posts
 Route::get('/', [PostController::class, 'index'])->middleware('auth');
 

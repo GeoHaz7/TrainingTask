@@ -37,6 +37,9 @@ class PostController extends Controller
                     }
                 }
             }
+            if ($post->pdf) {
+                unlink(public_path('storage\pdf\\' . $post->pdf));
+            }
             $post->delete();
             return redirect('/')->with('message', 'Post deleted successfully');
         } else
@@ -72,22 +75,14 @@ class PostController extends Controller
     {
         $post = Post::findorfail($id);
 
+        $formFields['title'] =
+            $request->title;
+        $formFields['categories'] =
+            $request->categories;
+        $formFields['content'] =
+            $request->content;
+
         $formFields['dImage'] = $request->deletedImages;
-
-
-
-
-
-        // $formFields = $request->validate(
-        //     [
-        //         'title' => ['required'],
-        //         'categories' => ['required'],
-        //         'image[]' => 'mimes:jpeg,png,bmp,tiff,jpg|max:4096',
-        //     ],
-        //     $messages = [
-        //         'mimes' => 'Only jpeg, png, bmp,tiff,jpg are allowed.'
-        //     ]
-        // );
 
         $youtubeLink = $request->embed;
 
@@ -96,14 +91,11 @@ class PostController extends Controller
         $youtubeLink = substr($youtubeLink, $pos);
 
 
-
-
         $formFields['embed'] = $youtubeLink;
 
         if ($post->images) {
             $image = explode('|', $post->images);
         }
-        // $new_image = array();
 
         if (auth()->user()->isAdmin || $post->user_id == auth()->id()) {
 
@@ -121,7 +113,23 @@ class PostController extends Controller
                     $new_image[] = $image_full_name;
                     $image[] = $image_full_name;
                 }
+                $formFields['images'] = implode('|', $image);
             }
+
+            if ($pdf = $request->file(('pdf'))) {
+
+                $pdf_name = md5(rand(1000, 10000));
+                $pdfExt = strtolower($pdf->getClientOriginalExtension());
+                $pdf_full_name = $pdf_name . '.' . $pdfExt;
+                $upload_path_pdf = 'storage/pdf/';
+                // $image_url = $upload_path . $image_full_name;
+                $pdf->move($upload_path_pdf, $pdf_full_name);
+                $formFields['pdf'] = $pdf_full_name;
+
+                // $file->store('images', 'public');
+                // dump($file);
+            }
+
 
 
             if ($request->deletedImages) {
@@ -135,8 +143,12 @@ class PostController extends Controller
             }
 
 
-            $formFields['images'] = implode('|', $image);
-
+            // if ($image) {
+            //     $formFields['images'] = implode('|', $image);
+            // }
+            //  else {
+            //     $formFields['images'] = null;
+            // }
 
 
             $formFields['status'] = $request->status;
@@ -145,7 +157,7 @@ class PostController extends Controller
 
             $post->update($formFields);
 
-            return redirect('/')->with('message', 'Post Updated');
+            // return redirect('/')->with('message', 'Post Updated');
 
             // return response()->json(['status' => 200, 'message' => 'Post Updated successfully']);
         } else
@@ -163,37 +175,13 @@ class PostController extends Controller
     //Store Post
     public function storePost(Request $request)
     {
+        $formFields['title'] =
+            $request->title;
+        $formFields['categories'] =
+            $request->categories;
+        $formFields['content'] =
+            $request->content;
 
-        $formFields = $request->validate(
-            [
-                'title' => ['required'],
-                'categories' => ['required'],
-                'content' => ['required'],
-                'image[]' => 'mimes:jpeg,png,bmp,tiff,jpg|max:4096',
-            ],
-            $messages = [
-                // 'required' => 'The :attribute field is required.',
-                'mimes' => 'Only jpeg, png, bmp,tiff,jpg are allowed.'
-            ]
-        );
-
-        $youtubeLink = $request->embed;
-
-        $pos = strrpos($youtubeLink, '=') + 1;
-
-        $youtubeLink = substr($youtubeLink, $pos);
-
-
-
-        $formFields['embed'] =
-            $youtubeLink;
-
-        // if ($request->hasFile('images')) {
-        //     $formFields['images'] =
-        //         $request->file('images')->store('images', 'public');
-        // }
-
-        //
         $image = array();
         if ($files = $request->file(('image'))) {
             foreach ($files as $file) {
@@ -213,14 +201,28 @@ class PostController extends Controller
 
         $formFields['images'] = implode('|', $image);
 
-        //
+        if ($pdf = $request->file(('pdf'))) {
+
+            $pdf_name = md5(rand(1000, 10000));
+            $pdfExt = strtolower($pdf->getClientOriginalExtension());
+            $pdf_full_name = $pdf_name . '.' . $pdfExt;
+            $upload_path_pdf = 'storage/pdf/';
+            $pdf->move($upload_path_pdf, $pdf_full_name);
+            $formFields['pdf'] = $pdf_full_name;
+        }
 
 
+        if ($request->embed) {
+            $youtubeLink = $request->embed;
+            $pos = strrpos($youtubeLink, '=') + 1;
+            $youtubeLink = substr($youtubeLink, $pos);
+
+            $formFields['embed'] =
+                $youtubeLink;
+        }
 
         $formFields['user_id'] = auth()->user()->id;
         $formFields['status'] = '1';
-
-
 
         //create post
         $post = Post::create($formFields);

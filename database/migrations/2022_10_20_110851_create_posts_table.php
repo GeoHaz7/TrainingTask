@@ -22,6 +22,7 @@ return new class extends Migration
             $table->boolean('status');
             $table->string('categories');
             $table->json('images')->nullable();
+            $table->string('pdf')->nullable();
             $table->timestamps();
         });
     }
