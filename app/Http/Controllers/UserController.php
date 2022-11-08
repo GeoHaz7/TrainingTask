@@ -90,10 +90,9 @@ class UserController extends Controller
         return redirect('/')->with('message', 'You have been logged out!');
     }
 
-    //Manage View 
-    public function manage()
+    //ManageUsers View 
+    public function manageUsers()
     {
-        // dd(User::order()->all());
         return view('users.manageUsers', ['users' => User::order()->paginate(3)]);
     }
 

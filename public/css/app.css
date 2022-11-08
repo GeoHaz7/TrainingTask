@@ -15,6 +15,11 @@ body {
     height: 150px;
 }
 
+.postImages {
+    width: 250px;
+    height: 250px;
+}
+
 .remove {
     display: block;
     background: #444;

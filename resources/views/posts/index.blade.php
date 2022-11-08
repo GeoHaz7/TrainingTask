@@ -11,7 +11,7 @@
     <div class="p-5">
         @if (!$posts->isEmpty())
             @foreach ($posts as $post)
-                <div class="bg-gray-50 border border-gray-200 rounded mb-3 p-2">
+                <div class=" overflow-hidden bg-gray-50 border border-gray-200 rounded mb-3 p-2 divv{{ $post->id }}">
 
                     <h3 class="text-2xl mb-2 inline">{{ $post->title }}</h3>
                     <div class="text-xl font-bold mb-4 inline">By {{ $post->user->name }}
@@ -23,18 +23,18 @@
                                 <a href="/posts/{{ $post->id }}/edit" class="text-blue-400 px-6 py-2 rounded-xl "><i
                                         class="fa-solid fa-pen-to-square"></i>
                                     Edit</a>
-                                <form class="inline" method="POST" action="/manage/posts/{{ $post->id }}/delete">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button class="text-red-500"><i class="fa-solid fa-trash"></i> Delete</button>
-                                </form>
+
+                                <button data-id="{{ $post->id }}" class="text-red-500 deletePost"><i
+                                        class="fa-solid fa-trash"></i> Delete</button>
                             </div>
                         @endif
                     @endauth
-                    <div class="text-xl font-bold mb-1 ">{{ $post->categories }}</div>
-                    <h5 class="mb-3">{{ $post->updated_at ? $post->updated_at : $post->created_at }}</h5>
-                    <p class="mt-3">{{ $post->content }}</p>
+                    <div>
+                        <p class="text-xl font-bold mb-1 ">{{ $post->categories }}</p>
+                        <h5 class="mb-3">{{ $post->updated_at ? $post->updated_at : $post->created_at }}</h5>
+                        <p class="mt-3">{{ $post->content }}</p>
 
+                    </div>
 
                     {!! $post->embed
                         ? '<iframe class="inline mr-6" width="600" height="400" src="https://www.youtube.com/embed/' .
@@ -59,16 +59,31 @@
 
                     @if ($post->pdf)
                         <div class="inline">
-                            <a href="{{ asset('storage/pdf/' . $post->pdf) }}"><img id="pdfFile" class="inline ml-6"
+                            <a href="{{ asset('storage/pdf/' . $post->pdf) }}"><img id="pdfFile" class="block ml-6"
                                     src="https://www.woschool.com/wp-content/uploads/2020/09/png-transparent-pdf-icon-illustration-adobe-acrobat-portable-document-format-computer-icons-adobe-reader-file-pdf-icon-miscellaneous-text-logo.png"
                                     width="150" height="100" alt="pdf" /></a>
 
                         </div>
                     @endif
+
+
+                    <a href="/posts/{{ $post->id }}/show">
+                        <p class="float-right bottom-0 block">
+                            @if (Auth::User()?->isAdmin)
+                                {{ count($post->comments) }}
+                            @else
+                                {{ $post->comments->where('status', 1)->count() }}
+                            @endif
+                            Comments
+                        </p>
+                    </a>
+
+
+
                     <!-- Modal -->
                     <div class="modal fade " id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
                         aria-hidden="true">
-                        <div class="modal-dialog modal-lg">
+                        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h3 class="modal-title text-2xl" id="exampleModalLabel">Post Images:</h3>
@@ -76,26 +91,25 @@
                                         aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
+
                                     <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
                                         <div class="carousel-inner">
 
-                                            @if ($post->images)
-                                                @foreach (explode('|', $post->images) as $image)
-                                                    @if ($loop->first)
-                                                        <div class="carousel-item active">
-                                                            <img class=" carouselItem"
-                                                                src="{{ asset('storage/images/' . $image) }}"
-                                                                alt="First slide">
-                                                        </div>
-                                                        @continue
-                                                    @endif
-                                                    <div class="carousel-item">
+                                            @foreach (explode('|', $post->images) as $image)
+                                                @if ($loop->first)
+                                                    <div class="carousel-item active">
                                                         <img class=" carouselItem"
                                                             src="{{ asset('storage/images/' . $image) }}"
                                                             alt="First slide">
                                                     </div>
-                                                @endforeach
-                                            @endif
+                                                    @continue
+                                                @endif
+                                                <div class="carousel-item">
+                                                    <img class=" carouselItem"
+                                                        src="{{ asset('storage/images/' . $image) }}"
+                                                        alt="First slide">
+                                                </div>
+                                            @endforeach
 
                                         </div>
                                         <a class="carousel-control-prev" href="#carouselExampleControls" role="button"
@@ -130,3 +144,29 @@
     </div>
 
 </x-layout>
+
+<script>
+    $(document).ready(function() {
+
+        $('.deletePost').on('click', function() {
+            id = $(this).data('id');
+            console.log(id);
+            $.ajax({
+                url: "/manage/posts/" + id + "/delete",
+                type: "DELETE",
+                data: {
+                    '_token': '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    if (response == 'success') {
+                        $('.divv' + id).hide();
+                    }
+                },
+                error: function(err) {
+
+                }
+            });
+
+        });
+    })
+</script>

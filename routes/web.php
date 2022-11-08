@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -33,12 +34,20 @@ Route::delete('/manage/users/{id}/delete', [UserController::class, 'deleteUser']
 //Delete Post
 Route::delete('/manage/posts/{id}/delete', [PostController::class, 'deletePost'])->middleware('auth');
 
+//Delete comment
+Route::delete('/manage/comments/{id}/delete', [CommentController::class, 'deleteComment'])->middleware('auth');
+
 //Update Edited Post
 Route::put('/posts/{id}/put', [PostController::class, 'updatePost'])->middleware('auth');
 
 //Store new post
 Route::post('/posts/add', [PostController::class, 'storePost']);
 
+//Store new comment
+Route::post('/posts/{id}/comment', [CommentController::class, 'storeComment']);
+
+//toggle comment status
+Route::put('/manage/comments/{id}/toggle', [CommentController::class, 'toggleComment'])->middleware('auth');
 
 
 // //All blogs

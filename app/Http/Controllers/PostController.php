@@ -16,9 +16,14 @@ class PostController extends Controller
     public function index()
     {
         $posts = Post::order();
-        if (!Auth::check()) {
+
+
+        if (!Auth::check() || !Auth::user()->isAdmin) {
             $posts  =  $posts->active();
         }
+        // $posts = $posts->author(Auth::user()->id);
+
+
         $posts  =  $posts->paginate(2);
 
         return view('posts.index', [
@@ -48,7 +53,7 @@ class PostController extends Controller
                 unlink(public_path('storage\pdf\\' . $post->pdf));
             }
             $post->delete();
-            return redirect('/')->with('message', 'Post deleted successfully');
+            return response()->json('success');
         } else
 
             // Make sure logged in user is owner
@@ -99,6 +104,7 @@ class PostController extends Controller
 
 
         $formFields['embed'] = $youtubeLink;
+        $image = array();
 
         if ($post->images) {
             $image = explode('|', $post->images);
@@ -128,8 +134,9 @@ class PostController extends Controller
                     $new_image[] = $image_full_name;
                     $image[] = $image_full_name;
                 }
-                $formFields['images'] = implode('|', $image);
             }
+
+            $formFields['images'] = implode('|', $image);
 
             if ($pdf = $request->file(('pdf'))) {
 
@@ -236,5 +243,15 @@ class PostController extends Controller
 
 
         return redirect('/')->with('message', 'Post created');
+    }
+
+    //Show
+    public function showPost($id)
+    {
+        // dd(Auth::user());
+
+        $post = Post::findorfail($id);
+
+        return view('posts.showPost', ['post' => $post]);
     }
 }
