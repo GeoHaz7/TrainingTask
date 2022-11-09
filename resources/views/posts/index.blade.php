@@ -66,6 +66,7 @@
                     @endif
 
 
+
                     <button id="like{{ $post->id }}" data-id="{{ $post->id }}"
                         class="likePost float-right ml-3 bottom-0 block">
                         <i class="fa-regular fa-thumbs-up"></i> Like
@@ -165,7 +166,7 @@
             success: function(response) {
                 response.forEach(post => {
                     $('#' + 'like' + post.id).html(
-                        '<i class="fa-solid fa-thumbs-up"></i> Liked')
+                        ' <i class="fa-solid fa-thumbs-up"></i> Liked')
                 });
             },
             error: function(err) {

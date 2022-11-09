@@ -30,8 +30,8 @@
 
 
             <div class="form-floating mb-2">
-                <textarea id="content" class="form-control" name="content"></textarea>
-                <label for="content">Post Content</label>
+                {{-- <label for="content">Post Content</label> --}}
+                <textarea id="content" class="ckeditor form-control" name="content"></textarea>
 
                 <div class="errorTxt text-left text-laravel">
                 </div>
