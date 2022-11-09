@@ -101,7 +101,8 @@ class UserController extends Controller
     {
         $user = User::findorfail($id);
 
-        if (auth()->user()->isAdmin || $user->user_id == auth()->id()) {
+
+        if (auth()->user()->isAdmin || $user->id == auth()->id()) {
             return view('users.editUser', ['user' => $user]);
         } else {
 

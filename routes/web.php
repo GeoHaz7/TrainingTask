@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\LikesController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -48,6 +49,18 @@ Route::post('/posts/{id}/comment', [CommentController::class, 'storeComment']);
 
 //toggle comment status
 Route::put('/manage/comments/{id}/toggle', [CommentController::class, 'toggleComment'])->middleware('auth');
+
+//like post
+Route::get('/posts/{id}/like', [LikesController::class, 'likePost']);
+
+//get Likes post
+Route::get('/likes', [LikesController::class, 'getLikes']);
+
+//dislike post
+Route::get('/posts/{id}/dislike', [LikesController::class, 'dislikePost']);
+
+//get Likes post
+Route::get('/dislikes', [LikesController::class, 'getDislikes']);
 
 
 // //All blogs

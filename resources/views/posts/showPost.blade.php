@@ -12,11 +12,10 @@
                         <a href="/posts/{{ $post->id }}/edit" class="text-blue-400 px-6 py-2 rounded-xl "><i
                                 class="fa-solid fa-pen-to-square"></i>
                             Edit</a>
-                        <form class="inline" method="POST" action="/manage/posts/{{ $post->id }}/delete">
-                            @csrf
-                            @method('DELETE')
-                            <button class="text-red-500"><i class="fa-solid fa-trash"></i> Delete</button>
-                        </form>
+
+                        <button data-id="{{ $post->id }}" class="text-red-500 deletePost"><i
+                                class="fa-solid fa-trash"></i>
+                            Delete</button>
                     </div>
                 @endif
             @endauth
@@ -47,9 +46,10 @@
 
             @if ($post->pdf)
                 <div class="inline">
-                    <a href="{{ asset('storage/pdf/' . $post->pdf) }}"><img id="pdfFile" class="block ml-6"
-                            src="https://www.woschool.com/wp-content/uploads/2020/09/png-transparent-pdf-icon-illustration-adobe-acrobat-portable-document-format-computer-icons-adobe-reader-file-pdf-icon-miscellaneous-text-logo.png"
-                            width="150" height="100" alt="pdf" /></a>
+                    <<embed src="{{ asset('storage/pdf/' . $post->pdf) }}" width="300" height="300"
+                        alt="pdf" />
+
+
 
                 </div>
             @endif
@@ -146,6 +146,7 @@
 </x-layout>
 
 
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"
     integrity="sha512-rstIgDs0xPgmG6RX1Aba4KV5cWJbAMcvRCVmglpam9SoHZiUCyQVDdH2LPlxoHtrv17XWblE/V/PP+Tr04hbtA=="
@@ -159,6 +160,46 @@
         } else {
             $("#name").hide();
         }
+    });
+
+
+    $('.deletePost').on('click', function() {
+        id = $(this).data('id');
+        // var fd = new FormData();
+        // fd.append('_method', 'DELETE');
+        // fd.append('_token', '{{ csrf_token() }}');
+        Swal.fire({
+            icon: 'warning',
+            title: 'Are you sure you want to delete this record?',
+            showDenyButton: false,
+            showCancelButton: true,
+            confirmButtonText: 'Yes'
+        }).then((result) => {
+            /* Read more about isConfirmed, isDenied below */
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: "/manage/posts/{{ $post->id }}/delete",
+                    type: "DELETE",
+                    data: {
+                        '_token': '{{ csrf_token() }}'
+                    },
+                    success: function(response, textStatus, xhr) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: response,
+                            showDenyButton: false,
+                            showCancelButton: false,
+                            confirmButtonText: 'Yes'
+                        }).then((result) => {
+                            if (response == 'success') {
+                                $('.trr' + id).hide();
+                            }
+                            location.href = "{{ url('/') }}";
+                        });
+                    }
+                });
+            }
+        })
     });
 
     $('#addCommentForm').validate({

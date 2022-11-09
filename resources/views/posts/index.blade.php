@@ -7,7 +7,6 @@
                 New Post</a>
         </div>
     @endif
-
     <div class="p-5">
         @if (!$posts->isEmpty())
             @foreach ($posts as $post)
@@ -65,6 +64,16 @@
 
                         </div>
                     @endif
+
+
+                    <button id="like{{ $post->id }}" data-id="{{ $post->id }}"
+                        class="likePost float-right ml-3 bottom-0 block">
+                        <i class="fa-regular fa-thumbs-up"></i> Like
+                    </button>
+                    <button id="dislike{{ $post->id }}" data-id="{{ $post->id }}"
+                        class="dislikePost float-right ml-3 bottom-0 block">
+                        <i class="fa-regular fa-thumbs-down"></i> Dislike
+                    </button>
 
 
                     <a href="/posts/{{ $post->id }}/show">
@@ -147,10 +156,95 @@
 
 <script>
     $(document).ready(function() {
+        $.ajax({
+            url: "/likes",
+            type: "GET",
+            data: {
+                '_token': '{{ csrf_token() }}'
+            },
+            success: function(response) {
+                response.forEach(post => {
+                    $('#' + 'like' + post.id).html(
+                        '<i class="fa-solid fa-thumbs-up"></i> Liked')
+                });
+            },
+            error: function(err) {
+
+            }
+        });
+
+        $.ajax({
+            url: "/dislikes",
+            type: "GET",
+            data: {
+                '_token': '{{ csrf_token() }}'
+            },
+            success: function(response) {
+                response.forEach(post => {
+                    $('#' + 'dislike' + post.id).html(
+                        '<i class="fa-solid fa-thumbs-down"></i> Disliked')
+                });
+            },
+            error: function(err) {
+
+            }
+        });
+
+        $('.likePost').on('click', function() {
+            id = $(this).data('id');
+
+            $.ajax({
+                url: "/posts/" + id + "/like",
+                type: "GET",
+                data: {
+                    '_token': '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    if (response == 'like') {
+                        $('#' + 'like' + id).html(
+                            '<i class="fa-solid fa-thumbs-up"></i> Liked')
+                        $('#' + 'dislike' + id).html(
+                            '<i class="fa-regular fa-thumbs-down"></i> Dislike')
+                    } else if (response == 'unlike') {
+                        $('#' + 'like' + id).html(
+                            '<i class="fa-regular fa-thumbs-up"></i> Like')
+                    }
+
+                },
+                error: function(err) {
+
+                }
+            });
+        })
+        $('.dislikePost').on('click', function() {
+            id = $(this).data('id');
+
+            $.ajax({
+                url: "/posts/" + id + "/dislike",
+                type: "GET",
+                data: {
+                    '_token': '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    if (response == 'dislike') {
+                        $('#' + 'dislike' + id).html(
+                            '<i class="fa-solid fa-thumbs-down"></i> Disliked')
+                        $('#' + 'like' + id).html(
+                            '<i class="fa-regular fa-thumbs-up"></i> Like')
+                    } else if (response == 'undislike') {
+                        $('#' + 'dislike' + id).html(
+                            '<i class="fa-regular fa-thumbs-down"></i> Dislike')
+                    }
+
+                },
+                error: function(err) {
+
+                }
+            });
+        })
 
         $('.deletePost').on('click', function() {
             id = $(this).data('id');
-            console.log(id);
             $.ajax({
                 url: "/manage/posts/" + id + "/delete",
                 type: "DELETE",
